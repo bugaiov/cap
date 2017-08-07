@@ -36,12 +36,17 @@ func getAndUnmarshal(url string, target interface{}) error {
 }
 
 func main() {
-	link := "https://api.coinmarketcap.com/v1/ticker?limit=20"
+	link := "https://api.coinmarketcap.com/v1/ticker?limit=30"
 	resp := new(MarketCapResponse)
+
 	for {
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{
-			"Symbol", "Market Cap", "Price", "%(1h)", "%(24h)", "%(7d)",
+			"Symbol",
+			"Price",
+			"Cap",
+			"24h%",
+			"7d%",
 		})
 		table.SetBorder(false)
 		getAndUnmarshal(link, resp)
@@ -53,9 +58,8 @@ func main() {
 			marketCapUsd_b := strconv.FormatFloat(marketCapUsd_f, 'f', 4, 64)
 			row := []string{
 				e.Symbol,
-				marketCapUsd_b,
 				"$" + e.PriceUsd,
-				e.PercentChange1h + "%",
+				marketCapUsd_b,
 				e.PercentChange24h + "%",
 				e.PercentChange7d + "%",
 			}
@@ -64,6 +68,6 @@ func main() {
 		table.AppendBulk(data)
 		table.SetAlignment(tablewriter.ALIGN_LEFT)
 		table.Render()
-		time.Sleep(2 * time.Second)
+		time.Sleep(60 * time.Second)
 	}
 }
